@@ -1,0 +1,239 @@
+Documentation
+
+How the program works
+
+How to run:
+    - There should be four files in the directory: a1.py, radix_tree.py, input.txt, and documentation_a1.txt
+    - running the program: 
+        in the command line, type 'python a1.py'
+
+General Description:
+    example input from input file <input.txt>:
+    
+    128
+    32
+    51 AA:F1:35:C5:94:E3 B8:97:D7:45:34:FF
+    32 B8:97:D7:45:34:FF 88:87:47:DE:D4:32
+    12 AB:E2:46:2C:78:11 AA:F1:35:C5:94:E2
+    
+    The program created for assignment 1 is written in the Python programming language and is 
+    called a1.py (for now on, it will be referred to as a1). For the trie implementation,
+    a1 uses radix_tree.py and uses custom functions found in that library like insert(), 
+    delete(), contains(), find(), and complete(). 
+    
+    Within a1, there are three functions which are driven by the main() function.
+        - GetPortsAndCache():   # Initializes a file object to be read and reads the cache size and port
+        - GetPSD():             # Gets the tuple (port, source MAC address, destination MAC address) 
+        - Populate()            # Populates the trie and checks for duplicate entries of the source
+                                # and desitnation address, checks to see if the cache has been exceeded,
+                                # and updates the cache with the most updated entry
+                                
+    The program accepts an input file  by the name of 'input.txt' and parses the information in that 
+    file in order to get the total ports, the size of the cache (implemented with a radix_tree.py), and 
+    sets of tuples <port number, source MAC address, destination MAC adress>.
+    a1 takes in the first line which is the number of ports, for example 128. After reading the
+    first line, it reads the second line and gets the size of the cache (number of leaves in the
+    tree). After the first two lines, a1 takes in the sets of tuples in each line
+    (ex. 51 AA:F1:35:C5:94:E3 B8:97:D7:45:34:FF) and separates each element into an array
+    
+    ex) list_psd[0] = 51                    # associated port number
+        list_psd[1] = AA:F1:35:C5:94:E3     # associated source MAC address
+        list_psd[2] = B8:97:D7:45:34:FF     # associated destination MAC address
+    
+    a1 will then insert the associated port and the source MAC address into the cache 
+    (implemented with radix_tree.py). It will then take the destination MAC address and check to see
+    if the exact same address has already been inserted into the cache before hand. If it has already 
+    been inserted, then the program will output the path in the trie to the associated port.
+    
+    With the radix_tree implementation of the cache is a list that holds the index of the source and 
+    associated port. The name of the list is 'cache'. If the number of inputs exceeds the cache size 
+    limit (32), a1 will take the least recently used key-value pair of the source and associated port
+    (which is the first element) and store them in a temporary variable. a1 will then pop the first element
+    out of the cache and append the latest key-value pair. a1 next goes into the trie and then using the 
+    custom function (found in radix_tree.py) delete() to delete the specific key-value pair and then, uses
+    the custom function insert() to insert the latest key-value pair into the trie.
+    If a duplicate source destination is already present in the cache, a1 will take the value of the MAC
+    address and find the associated port through the trie. a1 will go through the list 'cache' in order to 
+    find the index of that associated port. Once found, the port number will be updated/changed with the port number 
+    that is associated with the duplicate MAC address. The trie will be updated accordingly by finding the
+    same source address, deleting it and adding the duplicate address with the new port number.
+
+Assumptions
+    - The library radix_tree.py works correctly as designed.
+    - 1a1.py accepts an input file by the name of "input.txt". The name of the file
+      is hardcoded into a1.py. Therefore if the file name is incorrect, a1.py will 
+      NOT run correctly. Also, the input.txt file needs to be in the same directory
+      as a1.py
+    - 
+
+Major Design Decisions
+    - As per requirements, a1.py works on Python versions 2.4 and 2.7. It does not work on Python 3.xx
+    
+    - The name of the input file needs to be "input.txt". This is for ease of use during development 
+      and testing of the program. User will have to type in only 'python a1.py' in the command line 
+      instead of having to include a command line argument into the program, 'python a1.py input.txt'.
+      This is purely for ease and reducing redundancy while re-running and testing a1.py
+      
+    - After speaking and discussing with colleagues and peers, it was determined that the library,
+      radix_tree.py was the easiest implementation to use for the hexadecimal trie
+    
+    - When updating the cache (trie), there were two options. Either destroy the tree and rebuild it everytime it 
+      needed to be updated or find a way update the trie without having to destroy it. By doing so, an algorithm
+      was developed to find the index of the specific key-value pair that needed to be updated. In order to 
+      update the pair without having to destroy the trie, a second structure (list 'cache') was needed to keep the 
+      order and index of the key-value pairs being inserted into the trie. Instead of using the list 'cache', the
+      radix_tree.py could have been modified to satisfy the requirements but given the time requirements for the
+      assignment, the opportunity cost to learn and modify the inner workings of radix_tree.py was not worth it 
+      compared to using the list 'cache' implementation.
+      After development of the implementation, it seemed as if destroying the trie and rebuilding it everytime
+      it needed to be updated would have saved a lot of time at the cost of efficiency and optimization. Given 
+      smaller inputs, there would not have been a major difference between destroying and rebuilding and using the
+      list 'cache' implementation. The difference in efficiency would be very noticeable as the MAC addresses 
+      get larger and larger
+    
+    - if a MAC address is associated with two ports, it was decided to forward the MAC address to the last port. 
+      Essentially fulfilling the requirements found in the sample output of the assignment. This was implemented
+      to prevent or reduce the flooding to the switch because of the source/destination addresses sending/receiving
+      the packets of information.
+
+    - When outputting the results, a1 will not only output the expected results but also print out a command line
+      interpretation of the trie, and the list 'cache' to show the contents for further verification. This was 
+      implemented for verification purposes and making sure the trie has been implemented correctly.
+    
+Test cases (and outputs)
+
+    To test the program against the requirements, the input.txt file was modified. First, to test for the sample test case output.
+    Next, inputs needed to be developed for updated the cache (exceeding the cache size), duplicate entries in the source, 
+    and finding a source address that is a duplicate of a destination address. 
+    Testing was also needed for the same MAC address associated with two different ports. Based on the design decision, 
+    the output associated port should be the one associated with the most recently used MAC address.
+
+1. Simple Test Case given in assignment 1 requirements
+input:
+    128
+    32
+    51 2C:37:BB:25:74:F8 B8:97:D7:45:34:FF
+    32 AA:F1:35:C5:94:E2 88:87:47:DE:D4:32
+    12 AB:E2:46:2C:78:11 AA:F1:35:C5:94:E2
+output:
+    B8:97:D7:45:34:FF all ports except 51
+    88:87:47:DE:D4:32 all ports except 32
+    AA:F1:35:C5:94:E2 Root --> A --> 32
+    Reached end of file, now exiting
+    |
+     |-2C:37:BB:25:74:F8[51]
+     |-A
+      |--A:F1:35:C5:94:E2[32]
+      |--B:E2:46:2C:78:11[12]
+    [('2C:37:BB:25:74:F8', 51), ('AA:F1:35:C5:94:E2', 32), ('AB:E2:46:2C:78:11', 12)]
+
+2. duplicate source port found in cache (13 duplicate of 12)
+input:
+    128
+    32
+    51 2C:37:BB:25:74:F8 B8:97:D7:45:34:FF
+    32 AA:F1:35:C5:94:E2 88:87:47:DE:D4:32
+    12 AB:E2:46:2C:78:11 AA:F1:35:C5:94:E2
+    10 46:6B:FC:FF:FB:72 FB:FF:B2:E0:D1:44
+    11 09:A3:9D:8C:7D:3F 38:16:F9:EB:5D:A5
+    13 AB:E2:46:2C:78:11 65:3E:0A:62:3D:06
+
+output:
+    B8:97:D7:45:34:FF all ports except 51
+    88:87:47:DE:D4:32 all ports except 32
+    AA:F1:35:C5:94:E2 Root --> A --> 32
+    FB:FF:B2:E0:D1:44 all ports except 10
+    38:16:F9:EB:5D:A5 all ports except 11
+    65:3E:0A:62:3D:06 all ports except 13
+    Reached end of file, now exiting
+    |
+     |-2C:37:BB:25:74:F8[51]
+     |-A
+      |--A:F1:35:C5:94:E2[32]
+      |--B:E2:46:2C:78:11[13]
+     |-46:6B:FC:FF:FB:72[10]
+     |-09:A3:9D:8C:7D:3F[11]
+    [('2C:37:BB:25:74:F8', 51), ('AA:F1:35:C5:94:E2', 32), ('46:6B:FC:FF:FB:72', 10), ('09:A3:9D:8C:7D:3F', 11), ('AB:E2:46:2C:78:11', 13)] 
+
+3. number of addresses exceeds cache limit
+   (Test case 3 has same input as test case 2 but cache size is 3. Notice the trie structure is different)
+input:      
+    128
+    3
+    51 2C:37:BB:25:74:F8 B8:97:D7:45:34:FF
+    32 AA:F1:35:C5:94:E2 88:87:47:DE:D4:32
+    12 AB:E2:46:2C:78:11 AA:F1:35:C5:94:E2
+    10 46:6B:FC:FF:FB:72 FB:FF:B2:E0:D1:44
+    11 09:A3:9D:8C:7D:3F 38:16:F9:EB:5D:A5
+    13 AB:E2:46:2C:78:11 65:3E:0A:62:3D:06
+
+output:
+    B8:97:D7:45:34:FF all ports except 51
+    88:87:47:DE:D4:32 all ports except 32
+    AA:F1:35:C5:94:E2 Root --> A --> 32
+    FB:FF:B2:E0:D1:44 all ports except 10
+    38:16:F9:EB:5D:A5 all ports except 11
+    65:3E:0A:62:3D:06 all ports except 13
+    Reached end of file, now exiting
+    |A
+     |-46:6B:FC:FF:FB:72[10]
+     |-09:A3:9D:8C:7D:3F[11]
+     |-B:E2:46:2C:78:11[13]
+    [('46:6B:FC:FF:FB:72', 10), ('09:A3:9D:8C:7D:3F', 11), ('AB:E2:46:2C:78:11', 13)] 
+
+4. Two source addresses are the same as a destination address
+   (Given AA:F1:35:C5:94:E2 in port 32, duplicate source addresses found in 12 and 13. Once updated, 
+    expected output should be AA:F1:35:C5:94:E2 with port 13 instead of 12)
+
+input:
+    128
+    32
+    51 2C:37:BB:25:74:F8 B8:97:D7:45:34:FF
+    32 AA:F1:35:C5:94:E2 88:87:47:DE:D4:32
+    12 AB:E2:46:2C:78:11 AA:F1:35:C5:94:E2
+    10 46:6B:FC:FF:FB:72 FB:FF:B2:E0:D1:44
+    11 09:A3:9D:8C:7D:3F 38:16:F9:EB:5D:A5
+    13 AB:E2:46:2C:78:11 AA:F1:35:C5:94:E2
+
+output:
+    B8:97:D7:45:34:FF all ports except 51
+    88:87:47:DE:D4:32 all ports except 32
+    AA:F1:35:C5:94:E2 Root --> A --> 32
+    FB:FF:B2:E0:D1:44 all ports except 10
+    38:16:F9:EB:5D:A5 all ports except 11
+    AA:F1:35:C5:94:E2 Root --> A --> 13
+    Reached end of file, now exiting
+    |
+     |-2C:37:BB:25:74:F8[51]
+     |-A
+      |--A:F1:35:C5:94:E2[32]
+      |--B:E2:46:2C:78:11[13]
+     |-46:6B:FC:FF:FB:72[10]
+     |-09:A3:9D:8C:7D:3F[11]
+    [('2C:37:BB:25:74:F8', 51), ('AA:F1:35:C5:94:E2', 32), ('46:6B:FC:FF:FB:72', 10), ('09:A3:9D:8C:7D:3F', 11), ('AB:E2:46:2C:78:11', 13)] 
+
+Problems Encountered
+
+    input:
+        128
+        32
+        51 2C:37:BB:25:74:F8 B8:97:D7:45:34:FF
+        32 AA:F1:35:C5:94:E2 88:87:47:DE:D4:32
+        12 AB:E2:46:2C:78:11 AA:F1:35:C5:94:E2
+    output:
+        B8:97:D7:45:34:FF all ports except 51
+        88:87:47:DE:D4:32 all ports except 32
+        AA:F1:35:C5:94:E2 Root --> A --> 32
+
+    Given the expected input, the port forwarding of the output (last line) should be, AA:F1:35:C5:94:E2 Root --> A --> AA --> 12
+    Unfortunately, I could not figure out what the problem is. I can not figure out this problem at the moment.
+
+    Before, the output was:
+        B8:97:D7:45:34:FF all ports except 51
+        88:87:47:DE:D4:32 all ports except 32
+        AA:F1:35:C5:94:E2 Root --> 32
+
+        Tracing through a1, I realized that I checked to see if the destination address was the same as the
+        source address BEFORE inserting the next source address. Given the sample input, AA:F1:35:C5:94:E2 
+        would be checked in the cache first before AB:E2:46:2C:78:11 which meant the portfowarding was incorrect.
+        
