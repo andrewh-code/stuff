@@ -1,0 +1,41 @@
+To Do:
+
+1. Add two letter words to dictionary dumps
+2. word permutations - DONE
+    - used itertools.permutations function
+    
+3. assign points/distribution to each letter - DONE (not the distribution yet)
+    - use of a dictionary
+
+4. figure out more optimized search, can't just be three nested for loops through two lists 
+
+5. turn permutation_list into set to remove duplicates or create another loop to remove duplicate tuple entries  - DONE
+    - originally with test set 'ababacd', search.py would take 23.59 seconds to return the results, this is due to duplicates
+    - turned the list into a set which automatically removes duplicates and reduced the search time to 2.13 seconds
+    - for x in range(2, len(search_string)+1):
+        #permutation_list.append(list(map("".join, itertools.permutations(search_string, x))))   #finds the permutations of the search string and outputs a list of strings
+        permutation_set = set(map("".join, itertools.permutations(search_string, x)))
+        permutation_list.append(permutation_set)
+        could have used: #permutation_set.add(permutation_list)
+
+6. indexing of dictionary segments - DONE
+    - in each dictionary segment, every single word starts with the same letter, figured out how to get the 
+      second letter in each word and use those as flags/indicators where to put an index or a mark
+      intended so that the search engine can start searching from the index/mark corresponding to the second letter
+      ex) search for hello, engine starts searching the h-segment of the dictionary starting at --he mark 
+          instead of starting from the --ha mark, and then --hb, and then --hc mark, etc
+    
+7. dynamically add more words to dictionary segments
+
+8. sort results by points/length
+
+9. Regex on input - done
+    - used this piece of code:
+        match = re.match("^[a-z_{0,2}]$",self.search_string)
+        if match:
+            print "match is true"
+            return True
+            
+10. clean up
+
+11. Error class
