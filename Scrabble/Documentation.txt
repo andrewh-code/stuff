@@ -1,1 +1,42 @@
 Documentation...bleh :(
+
+search.py   --> Preprocess.py     --> Constants.py
+            --> Process.py        --> Constants.py
+            --> Points.py         --> Constants.py
+
+search.py (not finalized)
+===========================
+FUNCTIONS:
+    main():
+
+    input(search_string, option):
+        Description:
+            Takes the options the user indicates and the string they inputted to search.
+            It goes through the main options (1-5) of being able to search for the string in the 
+            dictionary, search for words starting with the string, search for words ending with the string, 
+            search for words that contain the specific string, or the ability to search for words with 
+            the blank tiles. The function goes through each option and calls functions from the Preprocess, 
+            Process, Points classes accordingly in order to process the specific steps needed for the 
+            desired output
+            
+        Input Parameters: 
+            search_string - raw input from the user (tiles they will be inputting to search)
+            option - flag indicating which option (kind of search) they chose
+            
+        Output:
+            If the user chooses an option that is not between 1-5, then the function prints and Error 
+            and then exits the entire program with the system call, sys.exit()
+
+
+    output(final_results, t2):
+        Description:
+            Takes the final results that were processed from the Process.py class and prints out the [2D] list
+            in a legible way. The words are outputted on the left side while the words' point score is outputted
+            on the right side.
+        
+        Input Parameters:
+            final_results - [2D] list of the words found and their associated point score (final_results[word][points])
+            t2 - the time it took to process the user's query (for diagnostic purposes)
+            
+        Output:
+            print the results, the time it took, the length/number of words found
