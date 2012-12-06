@@ -8,6 +8,51 @@ class Process:
     def __init__(self):
         self.search_string = ''
     
+    #============================================================
+    # Takes the user input (tile set, with the blanks) and replaces the blank with each letter in the alphabet.
+    # The function takes permutations of each new possible search string input and appends the set to a collection
+    # ie) a_b_ ==> aaba, aabb, aabc, aabd,...azbx, azby, azbz (26x26 combinations in total, then take a permutation of each combination)
+    # Input: search_string
+    # Output: blank_permutation_lst
+    #============================================================
+    def blankTileProcessing(self, search_string):
+        
+        self.search_string = search_string
+        blank_count = 0
+        blank_position = 0
+        tile = ''
+        letter1 = ''
+        letter2 = ''
+        alphabet = "abcdefghijklmnopqrstuvwxyz"
+        
+        blank_position_lst = []     #hold max 2 elements
+        search_string_lst = []
+        blank_permutation_set = ()
+        blank_permutation_lst = []
+        
+        search_string_lst = list(search_string)
+        #TO DO: NOT NECESSARY - When using reordered_search_string variable
+        for tile in search_string:                      
+            if (tile == '_'):
+                blank_count += 1
+                blank_position_lst.append(blank_position)
+            blank_position += 1
+            
+        if blank_count == 2:
+            for letter1 in alphabet:
+                search_string_lst[blank_position_lst[0]] = letter1
+                for letter2 in alphabet:
+                    search_string_lst[blank_position_lst[1]] = letter2
+                    #blank_permutation_set = set(list(map("".join, itertools.permutations(search_string_lst))))
+                    blank_permutation_lst.append("".join(search_string_lst))
+        else:
+            for letter2 in alphabet:
+                search_string_lst[blank_position_lst[0]] = letter2
+                blank_permutation_set = set(list(map("".join, itertools.permutations(search_string_lst))))
+                blank_permutation_lst.append(blank_permutation_set)
+        
+        return blank_permutation_lst
+    
     #==================================================
     # This function takes in the search string entered and finds all possible permutations of the letters.
     # For now, takes up to 10 letters (or tiles)

@@ -39,3 +39,5 @@ To Do:
 10. clean up
 
 11. Error class
+
+12. Blank tiles, take out duplicate results

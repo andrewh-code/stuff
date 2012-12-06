@@ -37,8 +37,6 @@ class Preprocess:
     #==================================================
     def checkInput(self, search_string):
         self.search_string = search_string
-        charAllowed = 'abcdefghijklmnopqrstuvwxyz_'
-        #match = 0
         
         #check for no input
         if ((self.search_string == '') or (self.search_string == ' ')):
