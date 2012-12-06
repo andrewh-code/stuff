@@ -8,6 +8,18 @@ search.py (not finalized)
 ===========================
 FUNCTIONS:
     main():
+        Description:
+            Incorporated a basic menu and used the raw_input function to get the user's word they
+            are searching for (input_string) and what they want to do with it (option). This is where both 
+            the variables are set. Declaration of variables and objects are done here and 
+            main calls the checkInput function from the Preprocess class to validate the string input
+            
+        Input Parameters:
+            raw_input(search_string) - raw input from the user (tiles they will be inputting to search)
+            raw_input(option) - flag indicating which option (kind of search) they chose
+            
+        Output:
+            None
 
     input(search_string, option):
         Description:
@@ -26,7 +38,6 @@ FUNCTIONS:
         Output:
             If the user chooses an option that is not between 1-5, then the function prints and Error 
             and then exits the entire program with the system call, sys.exit()
-
 
     output(final_results, t2):
         Description:
