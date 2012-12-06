@@ -1,8 +1,33 @@
 Documentation...bleh :(
 
-search.py   --> Preprocess.py     --> Constants.py
-            --> Process.py        --> Constants.py
-            --> Points.py         --> Constants.py
+
+OVERVIEW
+==============================
+==============================
+
+Flow:
+    search.py   --> Preprocess.py \ 
+              \ --> Process.py     | --> Constants.py
+               \ --> Points.py    / 
+
+search.py
+    input(search_string, option)
+    output(final_results, t2)
+    
+Preprocess.py
+    reorderString(self, string_input)
+    checkInput(self, search_string)
+    
+Process.py
+    blankTileProcessing(self, search_string)
+    stringPermutations(self, search_string)
+    collectDictionarySegments(self, reordered_search_string)
+    findWords(self, permutation_list, filtered_content)
+    findWordsContaining(self, search_string, filtered_content, option)
+    
+Points.py
+    associatePointScore()
+
 
 search.py (not finalized)
 ===========================
@@ -51,3 +76,54 @@ FUNCTIONS:
             
         Output:
             print the results, the time it took, the length/number of words found
+
+
+Preprocess.py
+===========================
+FUNCTIONS:
+    reorderString(self, string_input)
+        Input:
+        Output:
+        Description:
+
+    checkInput(self, search_string)
+        Input:
+        Output:
+        Description:
+
+
+Process.py
+===========================
+FUNCTIONS:
+    blankTileProcessing(self, search_string)
+        Input:
+        Output:
+        Description:
+
+    stringPermutations(self, search_string)
+        Input:
+        Output:
+        Description:
+
+    collectDictionarySegments(self, reordered_search-string)
+        Input:
+        Output:
+        Description:
+
+    findWords(self, permutation_list, filtered_content)
+        Input:
+        Output:
+        Description:
+
+    findWordsContaining(self, search_string, fitlered_content, option)
+        Input:
+        Output:
+        Description:
+
+Points.py
+===========================
+FUNCTIONS:
+    associatePointScore()        
+        Input:
+        Output:
+        Description:
