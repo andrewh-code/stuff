@@ -98,6 +98,8 @@ def main():
     option = 0
     count2 = 0      #delete this
     reordered_search_string = ''
+    permutation_set = set()
+    temp_permutation_set = set()
     permutation_list = []     #2D list
     blank_permutation_list = []
     filtered_content = []
@@ -115,7 +117,7 @@ def main():
     #option = int(raw_input("Choose option:"))
     option = 5
     #search_string = raw_input('Please input tiles for search: ').lower()
-    search_string = "a_b_"
+    search_string = "a_bc"
     
     #basic input check
     if (preprocess.checkInput(search_string)):
@@ -152,23 +154,20 @@ def main():
         sorted_results = process.findWordsContaining(search_string, filtered_content, option)
         final_results = points.associatePointScore(sorted_results)
     elif(option == 5):
-        print "Searching with blank tiles"
+        print "Searching with blank tiles..."
         alphabet = 'abcdefghijklmnopqrstuvwxyz'
         blank_permutation_list = process.blankTileProcessing(reordered_search_string)        
         filtered_content = process.collectDictionarySegments(alphabet)
         
-        print "blank_permutation_list: \n"
-        print blank_permutation_list
-        print len(blank_permutation_list)
-        print "\n\n"
-        
-        #TO DO: Creates a 2D list, gotta convert to 1D list
-        #TO DO: find way to use union keyword to take out duplicates, it will take care of one nested for loop in findWords function
+        #TO DO: Creates a 2D list, gotta convert to 1D list - DONE
+        #TO DO: find way to use union keyword to take out duplicates, it will take care of one nested for loop in findWords function - DONE
+        #TO DO: Do another union - DONE
+            # time vs duplication trade off. Takes longer to take out the duplicates with the union
         for blank_permutation_string in blank_permutation_list:
-            print blank_permutation_string
-            print (process.stringPermutations(blank_permutation_string))
-            permutation_list.append(process.stringPermutations(blank_permutation_string))
-        print permutation_list
+            #permutation_list.extend(process.stringPermutations(blank_permutation_string))
+            temp_permutation_set = set(process.stringPermutations(blank_permutation_string))
+            permutation_set = permutation_set.union(temp_permutation_set)
+        permutation_list = list(permutation_set)
         
         sorted_results = process.findWords(permutation_list, filtered_content)
         final_results = points.associatePointScore(sorted_results)

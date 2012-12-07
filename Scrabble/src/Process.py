@@ -37,19 +37,21 @@ class Process:
                 blank_count += 1
                 blank_position_lst.append(blank_position)
             blank_position += 1
-            
-        if blank_count == 2:
+        
+        if (blank_count == 2):
             for letter1 in alphabet:
                 search_string_lst[blank_position_lst[0]] = letter1
                 for letter2 in alphabet:
                     search_string_lst[blank_position_lst[1]] = letter2
                     #blank_permutation_set = set(list(map("".join, itertools.permutations(search_string_lst))))
                     blank_permutation_lst.append("".join(search_string_lst))
-        else:
+        elif (blank_count == 1):
             for letter2 in alphabet:
                 search_string_lst[blank_position_lst[0]] = letter2
-                blank_permutation_set = set(list(map("".join, itertools.permutations(search_string_lst))))
-                blank_permutation_lst.append(blank_permutation_set)
+                blank_permutation_lst.append("".join(search_string_lst))
+        else:
+            print "ERROR: Wrong number of blank tiles inputted, please make sure there is at least 1 and maximum 2 blank tiles in the search string."
+            sys.exit()
         
         return blank_permutation_lst
     
@@ -63,12 +65,14 @@ class Process:
     
         self.search_string = search_string
         self.permutation_list = []
+        self.temp_set = set()
         self.permutation_set = set()
         
         #starting from 2 letter words (no one letter words) up until the number of tiles inputted 
         for x in range(2, len(self.search_string)+1):
-            self.permutation_set = set(map("".join, itertools.permutations(self.search_string, x)))
-            self.permutation_list.append(self.permutation_set)
+            self.temp_set = set(map("".join, itertools.permutations(self.search_string, x)))
+            self.permutation_set = self.permutation_set.union(self.temp_set)
+            self.permutation_list = list(self.permutation_set)
 
         return self.permutation_list
         
@@ -123,18 +127,19 @@ class Process:
         self.filtered_content = filtered_content
         self.final_word_list = []
         
+        #TO DO: Is this check necessary?
         if (len(self.permutation_list) > len(self.filtered_content)):
             print "Error: list of possible words to search is greater than the amount being searched"
             sys.exit()
         
-        #TO DO: find a way to optimize this
-        for x in range(0, len(self.permutation_list)):
-            for str in self.permutation_list[x]:
-                for str_content in self.filtered_content:    #basic/easiest algorithm for search
+        #TO DO: find a way to optimize this - DONE (use of union for sets in stringPermutations())
+        #       find a way to optimize this EVEN MOAR (binary search? local search? use index?
+        for str in self.permutation_list:
+            for str_content in self.filtered_content:    #basic/easiest algorithm for search
                     if (str == str_content):            
                         self.final_word_list.append(str)
                         break
-
+        
         return sorted(self.final_word_list)
         
     #========================================
