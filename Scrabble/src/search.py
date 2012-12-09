@@ -38,6 +38,7 @@ import time
 from Preprocess import *
 from Process import *
 from Points import *
+from Postprocess import *
 
 def Output(final_results,t2):
 
@@ -92,6 +93,7 @@ def main():
     preprocess = Preprocess()
     process = Process()
     points = Points()
+    postprocess = Postprocess()
     
     #declare and initialize variables
     search_string = ''
@@ -105,6 +107,7 @@ def main():
     filtered_content = []
     sorted_results = []
     final_results = []
+    sorted_final_results = []
     
 
     #menu options
@@ -115,9 +118,9 @@ def main():
     print "4. Search for words containing"
     print "5. Search with blank tiles (use the underscore character to represent blanks)\n"
     #option = int(raw_input("Choose option:"))
-    option = 5
+    option = 1
     #search_string = raw_input('Please input tiles for search: ').lower()
-    search_string = "a_bc"
+    search_string = "andrew"
     
     #basic input check
     if (preprocess.checkInput(search_string)):
@@ -131,30 +134,30 @@ def main():
         print "ERROR: No option chosen, exiting."
         sys.exit()
     elif(option == 1):
-        print "Searching for words..."
+        print "Searching for words...\n"
         permutation_list = process.stringPermutations(reordered_search_string)
         filtered_content = process.collectDictionarySegments(reordered_search_string)
         sorted_results = process.findWords(permutation_list, filtered_content)
         final_results = points.associatePointScore(sorted_results)
     elif(option == 2):
-        print "Searching for words starting with: ", search_string
+        print "Searching for words starting with: ", search_string, "\n"
         filtered_content = process.collectDictionarySegments(search_string[0])  #get first letter int he word being searched
         sorted_results = process.findWordsContaining(search_string, filtered_content, option)
         final_results = points.associatePointScore(sorted_results)
     elif(option == 3):
-        print "Searching for words ending in: ", search_string
+        print "Searching for words ending in: ", search_string, "\n"
         alphabet = 'abcdefghijklmnopqrstuvwxyz'
         filtered_content = process.collectDictionarySegments(alphabet)
         sorted_results = process.findWordsContaining(search_string, filtered_content, option)
         final_results = points.associatePointScore(sorted_results)
     elif(option == 4):
-        print "Searching for words containing: ", search_string
+        print "Searching for words containing: ", search_string, "\n"
         alphabet = 'abcdefghijklmnopqrstuvwxyz'
         filtered_content = process.collectDictionarySegments(alphabet)
         sorted_results = process.findWordsContaining(search_string, filtered_content, option)
         final_results = points.associatePointScore(sorted_results)
     elif(option == 5):
-        print "Searching with blank tiles..."
+        print "Searching with blank tiles...\n"
         alphabet = 'abcdefghijklmnopqrstuvwxyz'
         blank_permutation_list = process.blankTileProcessing(reordered_search_string)        
         filtered_content = process.collectDictionarySegments(alphabet)
@@ -176,7 +179,32 @@ def main():
         sys.exit()
     t2 = time.time() - t1   #diagnostics
     
-    Output(final_results, t2)
+    sorted_option = 0
+    print "Results found and processed. Sort results by...\n"
+    print "1. Points - highest to lowest"
+    print "2. Points - lowest to highest"
+    print "3. Length - longest to shortest"
+    print "4. Length - shortest to longest"
+    sorted_option = int(raw_input("choose option: "))
+    print "Option", sorted_option, "chosen"
+    
+    if (sorted_option == 1):
+        print "Sorting results by points, highest to lowest\n"
+        sorted_final_results = postprocess.resultsByPoints(final_results)
+    elif (sorted_option == 2):
+        print "Sorting results by points, lowest to highest\n"
+        sorted_final_results = postprocess.resultsByPointsReverse(final_results)
+    elif (sorted_option == 3):
+        print "Sorting results by length, longest to shortest\n"
+        sorted_final_results = postprocess.resultsByLength(final_results)
+    elif (sorted_option == 4):
+        print "Sorting results by length, shortest to longest\n"
+        sorted_final_results = postprocess.resultsByLengthReverse(final_results)
+    else:
+        print "Option 1-4 not chosen, outputting results by default order"
+        sorted_final_results = final_results
+        
+    Output(sorted_final_results, t2)
     
 if __name__ == "__main__":
     main()
