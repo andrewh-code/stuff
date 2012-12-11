@@ -28,14 +28,28 @@ class Postprocess:
         self.final_results = final_results
         self.final_results_by_points = []
         
-        final_results_by_points = final_results.sort()
-        print final_results_by_points
-        return final_results_by_points
+        for x in range(0, len(final_results)):
+            final_results[x].append(len(final_results[x][0]))
+            
+        final_results = sorted(final_results, key=itemgetter(2), reverse = False)
+        print final_results
+        
+        for x in range(0, len(final_results)):
+            final_results[x].pop(2)
+            
+        return final_results
         
     def resultsByLengthReverse(self, final_results):
         self.final_results = final_results
         self.final_results_by_points = []
         
-        final_results_by_points = final_results.sort(reverse=True)
-        print final_results_by_points
-        return final_results_by_points
+        for x in range(0, len(final_results)):
+            final_results[x].append(len(final_results[x][0]))
+            
+        final_results = sorted(final_results, key=itemgetter(2), reverse = True)
+        print final_results
+        
+        for x in range(0, len(final_results)):
+            final_results[x].pop(2)
+        
+        return final_results

@@ -181,8 +181,8 @@ def main():
     
     sorted_option = 0
     print "Results found and processed. Sort results by...\n"
-    print "1. Points - highest to lowest"
-    print "2. Points - lowest to highest"
+    print "1. Points - lowest to highest"
+    print "2. Points - highest to lowest"
     print "3. Length - longest to shortest"
     print "4. Length - shortest to longest"
     sorted_option = int(raw_input("choose option: "))
