@@ -2,6 +2,7 @@ import java.net.*;
 import java.util.*;
 import java.lang.Object; 
 import java.io.*;
+import java.math.*;
 
 public class ServerMonitor
 {
@@ -65,13 +66,12 @@ public class ServerMonitor
         
         try
         {
-            Process p = Runtime.getRuntime().exec(System.getenv("windir") + "\\system32\\" + "tasklist.exe");
+            Process p = Runtime.getRuntime().exec(processName);
             //Process p = Runtime.getRuntime().exec(System.getenv("windir") + "\\system32\\" + "tasklist.exe"); //ps -ef for linux/unix
             BufferedReader input = new BufferedReader(new InputStreamReader(p.getInputStream()));
             
             while ((line = input.readLine()) != null)
             {
-                System.out.println(line);
                 if (line.indexOf(processName) != -1)
                 {
                     processRunning = true;
@@ -89,7 +89,7 @@ public class ServerMonitor
         return processRunning;
     }
     
-    public static String getFileSystemUsage()
+    public static List<String> getFileSystemUsage()
     {
         String line = "";
         List<String> fsList = new ArrayList<String>();
@@ -97,20 +97,45 @@ public class ServerMonitor
         try
         {
             Process p = Runtime.getRuntime().exec("df -gt");
+            //File[] roots = File.listRoots();
+            
             BufferedReader input = new BufferedReader(new InputStreamReader(p.getInputStream()));
             
             while ((line = input.readLine()) != null)
             {
-                //fsList.add(line);
+                fsList.add(line);
             }
             
         } catch (Exception err)
         {
             err.printStackTrace();
         }
+        
+        return fsList;
 
-        return "true";
-
+    }
+    
+    public static float getFreeRAM()
+    {
+        float availableRAM = 0;
+        availableRAM = Runtime.getRuntime().freeMemory();
+        
+        //convert result from Bytes to Gigabytes. Truncate to 2 decimal places.
+        availableRAM = (float)(Math.floor(availableRAM / (1024*1024*1024) * 100) / 100);
+        
+        return availableRAM;
+    }
+    
+    public static float getMaxRAM()
+    {
+        float maxRAM = 0;
+        maxRAM = Runtime.getRuntime().maxMemory();
+        
+        //convert result from Bytes to Gigabytes
+        
+        maxRAM = (float)(Math.floor(maxRAM / (1024*1024*1024) * 100) / 100);
+        
+        return maxRAM;
     }
     
     /*
