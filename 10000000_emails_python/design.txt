@@ -1,0 +1,163 @@
+PAGE 1
+==============================
+REQUIREMENTS/CASE
+==============================
+Given a table 'mailing':
+
+CREATE TABLE mailing (
+	addr VARCHAR(255) NOT NULL
+);
+
+The mailing table will initially be empty.  New addresses will be added on a daily basis.  It is expected that the table will store at least 10,000,000 email addresses and 100,000 domains.
+
+Write a Perl script that updates another table which holds a daily count of email addresses by their domain name.
+
+Use this table to report the top 50 domains by count sorted by percentage growth of the last 30 days compared to the total.
+
+Use this table to report the top 3 domains by count sorted by percentage growth of the last 3 days compared to the total.
+
+** NOTE **
+
+- The original mailing table should not be modified.
+- All processing must be done in Perl/PHP/Python/whatever language you are using (eg. no complex queries or sub-queries)
+- Submit a compressed file(tar/zip) with the files required to run your script.
+
+
+
+==============================
+DESIGN:
+==============================
+
+    DEV STACK
+    ==============================
+    OS:                     Ubuntu 12.10.1 
+    Kernel:                 linux 3.5.0-17-generic
+    Processor:              x86_64
+    Programming Language:   Python 2.7.3
+      External Libraries:   MySQL-python 1.2.5
+    Database:               MySQL 5.5.37
+
+    
+    
+    SQL DATABASE 
+    =============================
+    # user_id = andrew
+    # password = password
+    
+    #to make testing easier, set the local-infile parameter to 1 the .cnf file
+    # This overrides default/basic security features but assume no one outside
+    # of the network can maliciously attack the database and people loading from
+    # files know what they're loading 
+    /etc/mysql/my.cnf
+    under [mysqld] and [mysql]
+    
+    CREATE DATABASE test_db
+    USE test_db
+
+    CREATE TABLE mailing (
+        addr VARCHAR(255) NOT NULL
+    );
+
+    CREATE TABLE domain_count(
+        day DATE
+        domain varchar(255)
+        domaincount BIGINT
+    );
+
+    ASSUMPTIONS/DESIGN DECISIONS
+    ==============================
+    -   Free (open source) products will be used for this case. MySQL is used so there is a possibility that 
+        MySQL specific commands will be used. If DB2 was used, then DB2 specific commands could be used and may not
+        be compatible with Oracle/MySQL, Microsoft SQL Server,
+        
+        ex) DB2 SQL:  select current date as today from t1      --> does not work on MySQL
+            MySQL:    select date(now()) as today from t1
+
+    -   Assume another process/program/script has already validated and verified the e-mails before being inserted
+        into the table. The e-mails are valid and used:
+        
+        invalid e-mails like:
+        test@@gmail.com
+        @test.com
+        testing <testing@gmail.com>
+        test@testing..com
+        &%^(%$@blah.com
+        
+        should not be found in the table.
+        Duplicates should not be allowed, even though the MAILING table does not have any constraints on this (UNIQUE) but
+        another process/program/script should take care of it
+
+        Encrypting the e-mails (with a hash or salt) is asusme to be done by another program before inserting into the MAILING table.
+        
+    -   The second table is named, DOMAIN_COUNT. As an afterthought, naming one of the columns DOMAINCOUNT is not a good idea.
+        The changes of making SQL Syntax errors increase dramatically when you have a table name and column name that are
+        very similar to each other.
+        3 columns were created: day, domain, domaincount
+        
+        It was deemed necessary to put in a column for the date as it is important to keep track of the change in growth during
+        the 30 day time period. It is easier to calculate it through SQL as opposed to implementing it in Python/Perl.
+        
+        Domain's datatype is set to varchar(255) just like the addr column of MAILING. The field can be smaller but for safety purposes, 
+        it was put in (for extreme cases). This extreme won't be tested as it is assumed MySQL QA has tested this case when designing and
+        developing the database engine.
+        
+        domaincount's datatype is BIGINT which has a max unsiqned value of 18446744073709551615. Although most likely space on the database
+        server may run out before the BIGINT limit is reached for one domain name, it is there as a safety feature. INT would suffice as well as 
+        its maximum unsigned value is 4294967295. It also stores half the Bytes as BIGINT so it is a better option for storage purposes.
+        This extreme won't be tested as it is assumed MySQL QA has tested this case when designing and
+        developing the database engine.
+        
+        None of these columns are identified as keys (primary or foreign) as with the current design, the requirements do not necessitate 
+        for a primary key to be there. Primary keys need to be unique and given the requirement that the program is counting the occurance
+        of domains and the dates, the columns are not suitable candiates to be pimary keys. The MAILING table also does not have a primary
+        key restriction so no foreign key is needed on any of the columns of the second tbale unless a third table was created.
+        
+    -   Since the first table stores at least 10,000,000 e-mails (with 100,000 domains), there is the possibility that
+        at any given day (even on the first day), at least 10,000,000 e-mails will be added to the table. Even so, millions 
+        of e-mails can be added to the table at an ever growing pace. The size of the table can grow exponentially and 
+        result in an exponential increase in storage consumption, performance issues, database support costs. It is easier
+        to delete the previous day's e-mail entries.
+        
+        If there is a business decision to not delete the entries in the MAILING table, then a possible solution to meet the requirement
+        is to use an SQL query to select all the unique domains and their corresponding total count. Although, this would constitute (to me)
+        as a complex query to implement so to implement this, execute the following SQL statement:
+            
+            SELECT DISTINCT(domain) FROM domain_count
+            
+        Then use the programming language to move the SQL results into an array/list. Create a loop and iterate throughout this list while
+        executing another SQL statement that gathers the maximum count of each domain:
+        
+        for python_var_domain in python_domain_list:
+            execute SQL: SELECT MAX(domaincount) from domain_count where domain='python_var_domain'
+            append SQL to each element of the python_domain_list (effectively creating a hashtable/2D associative array)
+            
+        
+
+    -   E-mail addresses are added to the table every day (including holidays, weekends, non-business days, basically 365 days a year).
+        This is to prevent a possible overload of the database by inserting/committing more than a days worth of e-mails. 
+        Even though if days are skipped, it should not affect the end result of storing the domains in another table and 
+        finding the top 50 domains (in terms of growth)
+        
+    -   "Complex" is a relative term. What may seem easy/simple to some may be very hard/complex for others
+        Assume queries that fall under 'complex' or sub-queries include keywords like UNION, JOIN, have things
+        like nested SELECT statements, use of stored procedures, and views
+
+    -   The solution is divided into two scripts.
+
+        1. The first script grabs the domains and transfers them to the second table
+        2. The second script calculates the top 50 domains in the past 30 days
+        
+        
+        Creating a separate class to handle the database functions was looked at but by implementing it there would be a high chance that
+        if something happened to the database class or if there were modifications, they would greatly affect 1. and 2. It was decided not to use 
+        a database class as this would create higher coupling and dependancy between the class and 1. and 2. The complexity would 
+        also increase as you increaes the amount of interdependancy between the files/modules
+        
+        1. and 2. could have been combined together for high cohesion and code reusability (especially if the Database class is not used) but
+        they are separated for maintainability and readability.
+
+    -   in the generate_emails.py program, domain names of length of 5 were used with 6 possible char values to create the string.
+        This won't create 100,000 unique domains; it gives us about 6 Combination 5 (6C5) which results in 252 possible unique domains.
+        This is more than enough to emphasize the test results for the top 50 domains.
+
+

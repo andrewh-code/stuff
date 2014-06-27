@@ -1,0 +1,154 @@
+PAGE 1
+==============================
+REQUIREMENTS/CASE
+==============================
+Given a table 'mailing':
+
+CREATE TABLE mailing (
+	addr VARCHAR(255) NOT NULL
+);
+
+The mailing table will initially be empty.  New addresses will be added on a daily basis.  It is expected that the table will store at least 10,000,000 email addresses and 100,000 domains.
+
+Write a Perl script that updates another table which holds a daily count of email addresses by their domain name.
+
+Use this table to report the top 50 domains by count sorted by percentage growth of the last 30 days compared to the total.
+
+** NOTE **
+
+- The original mailing table should not be modified.
+- All processing must be done in Perl/PHP/Python/whatever language you are using (eg. no complex queries or sub-queries)
+- Submit a compressed file(tar/zip) with the files required to run your script.
+
+
+
+==============================
+DESIGN:
+==============================
+
+    DEV STACK
+    ==============================
+    OS:                     Ubuntu 12.10.1 
+    Kernel:                 linux 3.5.0-17-generic
+    Processor:              x86_64
+    Programming Language:   Python 2.7.3
+      External Libraries:   MySQL-python 1.2.5
+    Database:               MySQL 5.5.37
+
+    
+    
+    SQL DATABASE COMMANDS
+    =============================
+    CREATE DATABASE test_db
+    USE test_db
+
+    CREATE TABLE mailing (
+        addr VARCHAR(255) NOT NULL
+    );
+
+    CREATE TABLE domain_count(
+        day DATE
+        domain varchar(255)
+        domaincount BIGINT
+    );
+
+    ASSUMPTIONS/DESIGN DECISIONS
+    ==============================
+    -   Free (open source) products will be used for this case. MySQL is used so there is a possibility that 
+        MySQL specific commands will be used. If DB2 was used, then DB2 specific commands could be used and may not
+        be compatible with Oracle/MySQL, Microsoft SQL Server,
+        
+        ex) DB2 SQL:  select current date as today from t1      --> does not work on MySQL
+            MySQL:    select date(now()) as today from t1
+
+    -   Assume another process/program/script has already validated and verified the e-mails before being inserted
+        into the table. The e-mails are valid and used:
+        
+        invalid e-mails like:
+        test@@gmail.com
+        @test.com
+        testing <testing@gmail.com>
+        test@testing..com
+        &%^(%$@blah.com
+        
+        should not be found in the table.
+        Duplicates should not be allowed, even though the MAILING table does not have any constraints on this (UNIQUE) but
+        another process/program/script should take care of it
+
+    -   The second table is named, DOMAIN_COUNT. As an afterthought, naming one of the columns DOMAINCOUNT is not a good idea.
+        The changes of making SQL Syntax errors increase dramatically when you have a table name and column name that are
+        very similar to each other.
+        3 columns were created: day, domain, domaincount
+        
+        It was deemed necessary to put in a column for the date as it is important to keep track of the change in growth during
+        the 30 day time period. It is easier to calculate it through SQL as opposed to implementing it in Python/Perl.
+        
+        Domain's datatype is set to varchar(255) just like the addr column of MAILING. The field can be smaller but for safety purposes, 
+        it was put in (for extreme cases)
+        
+        domaincount's datatype is BIGINT which has a max unsiqned value of 18446744073709551615. Although most likely space on the database
+        server may run out before the BIGINT limit is reached for one domain name, it is there as a safety feature. INT would suffice as well as 
+        its maximum unsigned value is 4294967295. It also stores half the Bytes as BIGINT so it is a better option for storage purposes.
+        
+    -   Since the first table stores at least 10,000,000 e-mails (with 100,000 domains), there is the possibility that
+        at any given day (even on the first day), at least 10,000,000 e-mails will be added to the table. Even so, millions 
+        of e-mails can be added to the table at an ever growing pace. The size of the table can grow exponentially and 
+        result in an exponential increase in storage consumption, performance issues, database support costs. It is easier
+        to delete the previous day's e-mail entries.
+        
+        If there is a business decision to not delete the entries in the MAILING table, then a possible solution to meet the requirement
+        is to use an SQL query to select all the unique domains and their corresponding total count. Although, this would constitute (to me)
+        as a complex query to implement so to implement this, execute the following SQL statement:
+            
+            SELECT DISTINCT(domain) FROM domain_count
+            
+        Then use the programming language to move the SQL results into an array/list. Create a loop and iterate throughout this list while
+        executing another SQL statement that gathers the maximum count of each domain:
+        
+        for python_var_domain in python_domain_list:
+            execute SQL: SELECT MAX(domaincount) from domain_count where domain='python_var_domain'
+            append SQL to each element of the python_domain_list (effectively creating a hashtable/2D associative array)
+            
+        
+
+    -   E-mail addresses are added to the table every day (including holidays, weekends, non-business days, basically 365 days a year).
+        This is to prevent a possible overload of the database by inserting/committing more than a days worth of e-mails. 
+        Even though if days are skipped, it should not affect the end result of storing the domains in another table and 
+        finding the top 50 domains (in terms of growth)
+        
+    -   "Complex" is a relative term. What may seem easy/simple to some may be very hard/complex for others
+        Assume queries that fall under 'complex' or sub-queries include keywords like UNION, JOIN, have things
+        like nested SELECT statements, use of stored procedures, and views
+
+    -   The solution is divided into two scripts.
+
+        1. The first script grabs the domains and transfers them to the second table
+        2. The second script calculates the top 50 domains in the past 30 days
+        
+        
+        Creating a separate class to handle the database functions was looked at but by implementing it there would be a high chance that
+        if something happened to the database class or if there were modifications, they would greatly affect 1. and 2. It was decided not to use 
+        a database class as this would create higher cohesion and dependancy between the class and 1. and 2.
+        
+        1. and 2. could have been combined together
+
+
+
+QUESTIONS
+==============================
+- do we need to take into account the actual specific e-mail (before the @) when inserting into the next table
+- are there any constraints on the second table? primary and foreign keys? unique constraints? up to our imagination/design?
+- worry about reading from MAILING table while it is being updated? 
+- sorted by percentage growth as in highest growth first to lowest (last)
+- percentage outputted in double? int? float? (how many decimal places)
+    - who will be looking at the data? how should we present the data?
+- all processing must be done in Perl/PHP/Python so SQL does not do any of that? aka, substring function in SQL should be done in other language?
+    - using SQL built in functions like substr(), date(), now(), current date, avg(), count(), etc allowed?
+
+- the first table won't be cleaned out right?
+
+
+
+
+
+

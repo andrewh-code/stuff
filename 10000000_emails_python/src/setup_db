@@ -1,0 +1,17 @@
+# initial
+# database test_db must already have been created using a simple
+# CREATE DATABASE test_db command
+# user_id andrew with password 'password' has been created
+# remember to set local-infile=1 in /etc/mysql/my.cnf
+
+USE test_db
+
+CREATE TABLE mailing2 (
+        addr VARCHAR(255) NOT NULL
+    );
+
+CREATE TABLE domain_count2(
+        day DATE
+        domain varchar(255)
+        domaincount BIGINT
+    );

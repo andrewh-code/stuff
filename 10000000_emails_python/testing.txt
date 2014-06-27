@@ -1,0 +1,316 @@
+testing.txt
+
+test files:
+day1.txt --> 1000 records
+day2.txt --> 3000 records
+day3.txt --> 5000 records
+day4.txt --> 10000 records
+day5.txt --> 100000
+
+UNIT TESTS/TEST CASES
+========================================
+- test for incorrect parameters in database connection
+- run the scripts if both tables are empty
+- calculate one days' worth of loading
+- calculate x day's worth of loading
+*- calculate 30 days worth of loading
+*- test for binary (corruptable/readable)file (instead of ascii) file --> should be taken care by MySQL
+*- test performane and tuning for SQL queries 
+    *- runs fast with 10000 rows, what about 10000000 rows?
+
+*- run tests on windows 7 for compatibility and portability
+
+
+NOTE: * indicates testing/tuning would be done more thoroughly if given more time
+
+========================================
+RESULTS
+========================================
+
+1. Invalid password for database connection
+    
+   password = "password1" #instead of password
+   
+   expected results:
+        return exception error saying that unable to connect to the database
+    
+    actual results:
+        andrew@andrew-linux:~/shared/test/src$ python transferDomains.py
+        Error 1045: Access denied for user 'andrew'@'localhost' (using password: YES)
+
+    conclusion: pass
+    
+1. both tables (MAILING and DOMAIN_COUNT) are empty
+    
+    expected results:
+        nothing gets inserted
+        
+    actual results:
+        andrew@andrew-linux:~/shared/test/src$ python transferDomains.py
+        successfully connected to test_db
+        retrieved 0 rows from test_db
+        inserted 0 rows into domain_count
+        
+        andrew@andrew-linux:~/shared/test/src$ python topDomains.py
+        successfully connected to test_db
+        Error: Unable to find the total number of domains, please check the table
+
+    conclusion: pass
+    
+2. calculate after one day's worth of e-mails gets inserted into MAILING
+
+    input: day1.txt
+           
+    expected results:
+        successfully connect and retrieve rows from the MAILING table
+    
+    actual results:
+    
+    andrew@andrew-linux:~/shared/test/src$ python transferDomains.py
+    successfully connected to test_db
+    retrieved 931 rows from test_db
+    inserted 931 rows into domain_count
+    
+    andrew@andrew-linux:~/shared/test/src$ python topDomains.py
+    successfully connected to test_db
+
+    the total sum of the domains between 2014-05-19 and 2014-06-18 is: 1000
+    The top 50 domains in terms of growth between 2014-05-19 and 2014-06-18
+    ['domain', 'total_number', 'percent_increase']
+    feaaa.com 3 0.30000
+    afaea.com 3 0.30000
+    aaebe.com 3 0.30000
+    dbcbf.com 2 0.20000
+    fbfff.com 2 0.20000
+    acece.com 2 0.20000
+    badec.com 2 0.20000
+    ccbcc.com 2 0.20000
+    eaded.com 2 0.20000
+    bbddb.com 2 0.20000
+    dccfb.com 2 0.20000
+    cceee.com 2 0.20000
+    eceed.com 2 0.20000
+    edfba.com 2 0.20000
+    ceccf.com 2 0.20000
+    daafd.com 2 0.20000
+    eabed.com 2 0.20000
+    cbedb.com 2 0.20000
+    cdbed.com 2 0.20000
+    ddbaf.com 2 0.20000
+    fccba.com 2 0.20000
+    afdbc.com 2 0.20000
+    eeabc.com 2 0.20000
+    cbbff.com 2 0.20000
+    eefef.com 2 0.20000
+    beafe.com 2 0.20000
+    deaac.com 2 0.20000
+    faefd.com 2 0.20000
+    ddbdf.com 2 0.20000
+    ccbea.com 2 0.20000
+    cfecc.com 2 0.20000
+    acaed.com 2 0.20000
+    dadbf.com 2 0.20000
+    cdefa.com 2 0.20000
+    fbafd.com 2 0.20000
+    fdadd.com 2 0.20000
+    daede.com 2 0.20000
+    fdbee.com 2 0.20000
+    bfcaa.com 2 0.20000
+    defdc.com 2 0.20000
+    dcdee.com 2 0.20000
+    dccfe.com 2 0.20000
+    ddbea.com 2 0.20000
+    deadd.com 2 0.20000
+    bdfef.com 2 0.20000
+    ffaca.com 2 0.20000
+    fdbfc.com 2 0.20000
+    eeffc.com 2 0.20000
+    cedca.com 2 0.20000
+    ddead.com 2 0.20000
+    
+    conclusion: pass
+    
+3. Check sum after 5 days
+
+        actual result:
+        
+        andrew@andrew-linux:~/shared/test/src$ python transferDomains.py
+        successfully connected to test_db
+        retrieved 931 rows from test_db
+        inserted 931 rows into domain_count
+        
+        andrew@andrew-linux:~/shared/test/src$ python transferDomains.py
+        successfully connected to test_db
+        retrieved 2470 rows from test_db
+        inserted 2470 rows into domain_count
+        
+        andrew@andrew-linux:~/shared/test/src$ python transferDomains.py
+        successfully connected to test_db
+        retrieved 3686 rows from test_db
+        inserted 3686 rows into domain_count
+        
+        andrew@andrew-linux:~/shared/test/src$ python transferDomains.py
+        successfully connected to test_db
+        retrieved 5598 rows from test_db
+        inserted 5598 rows into domain_count
+        
+        andrew@andrew-linux:~/shared/test/src$ python transferDomains.py
+        successfully connected to test_db
+        retrieved 7776 rows from test_db
+        inserted 7776 rows into domain_count
+        
+        andrew@andrew-linux:~/shared/test/src$ python topDomains.py
+        successfully connected to test_db
+        119000
+        the total sum of the domains between 2014-05-19 and 2014-06-18 is: 119000
+        The top 50 domains in terms of growth between 2014-05-19 and 2014-06-18
+        ['domain', 'total_number', 'percent_increase']
+        fdbbd.com 36 0.03361
+        efffa.com 26 0.02689
+        ffdcd.com 26 0.02605
+        beeac.com 29 0.02605
+        afebe.com 21 0.02521
+        dffaa.com 25 0.02521
+        cddee.com 27 0.02521
+        cffbe.com 22 0.02437
+        aedab.com 25 0.02437
+        caadd.com 29 0.02437
+        babcb.com 28 0.02437
+        babbd.com 27 0.02353
+        aedda.com 19 0.02353
+        badeb.com 25 0.02353
+        caefc.com 23 0.02353
+        edbbc.com 24 0.02353
+        aacac.com 24 0.02353
+        bcdcc.com 20 0.02353
+        eadbb.com 23 0.02353
+        fefba.com 23 0.02353
+        abdce.com 23 0.02353
+        bcbbf.com 25 0.02353
+        cfceb.com 24 0.02269
+        bccdc.com 22 0.02269
+        efccd.com 19 0.02269
+        cccfc.com 23 0.02269
+        cabea.com 23 0.02269
+        fdfec.com 20 0.02269
+        beacb.com 22 0.02269
+        cdbfa.com 24 0.02269
+        dfffc.com 18 0.02269
+        bacae.com 21 0.02269
+        acedf.com 24 0.02269
+        edebf.com 21 0.02269
+        bfcaa.com 24 0.02269
+        fbeaf.com 24 0.02269
+        aacae.com 22 0.02269
+        aeace.com 24 0.02269
+        afdfd.com 22 0.02269
+        bafdd.com 22 0.02185
+        ccccb.com 24 0.02185
+        edbdb.com 22 0.02185
+        eaaec.com 21 0.02185
+        ebcdf.com 23 0.02185
+        fcafe.com 25 0.02185
+        abadf.com 19 0.02185
+        cccfa.com 23 0.02185
+        edbfa.com 22 0.02185
+        ebdaa.com 22 0.02185
+        dfbee.com 21 0.02185
+
+        conclusion: pass
+        
+4. performance, timing the transfer of 10,000,000 records from MAILING to the second table
+
+    input: rows inputted into MAILING: 10,000,000
+           rows retrieved to calculate top 50 in the second table: 28237
+    
+    mysql> select count(*) from mailing;
+    +----------+
+    | count(*) |
+    +----------+
+    | 10000000 |
+    +----------+
+    1 row in set (18.94 sec)
+
+    mysql> select count(*) from domain_count
+        -> ;
+    +----------+
+    | count(*) |
+    +----------+
+    |    28237 |
+    +----------+
+    1 row in set (0.03 sec)
+    
+    actual result:
+    
+    andrew@andrew-linux:~/shared/test/test$ ./performance.sh
+    beginning performance test
+    testing to see how long transferDomains.py takes to run
+    successfully connected to test_db
+    retrieved 7776 rows from test_db
+    inserted 7776 rows into domain_count
+    
+    time it took (milliseconds) for transferDomains.py to run: 125
+    
+    
+    testing to see how long topDomains.py takes to run
+    successfully connected to test_db
+    10119000
+    the total sum of the domains between 2014-05-19 and 2014-06-18 is: 10119000
+    The top 50 domains in terms of growth between 2014-05-19 and 2014-06-18
+    ['domain', 'total_number', 'percent_increase']
+    aefbb.com 1423 0.01416
+    fcfac.com 1419 0.01416
+    ddacd.com 1409 0.01406
+    caadb.com 1402 0.01402
+    eafca.com 1400 0.01401
+    dbcff.com 1401 0.01400
+    fbafb.com 1399 0.01395
+    ccbde.com 1399 0.01394
+    bfefe.com 1399 0.01394
+    eeace.com 1395 0.01389
+    ddedb.com 1391 0.01388
+    eedbe.com 1389 0.01387
+    aedae.com 1389 0.01387
+    cffab.com 1388 0.01387
+    fbafd.com 1390 0.01386
+    cebcf.com 1385 0.01385
+    aadaa.com 1381 0.01384
+    bbfbd.com 1378 0.01384
+    decbc.com 1390 0.01383
+    ccbbe.com 1374 0.01382
+    ebcea.com 1380 0.01382
+    ccafe.com 1379 0.01382
+    bfcab.com 1384 0.01382
+    fdbcb.com 1378 0.01381
+    dccac.com 1381 0.01381
+    abdfc.com 1388 0.01381
+    bfdfb.com 1376 0.01381
+    dbbff.com 1382 0.01380
+    becfc.com 1378 0.01380
+    cceff.com 1376 0.01380
+    ddbaf.com 1375 0.01379
+    cdebe.com 1380 0.01378
+    beccb.com 1379 0.01378
+    cffae.com 1379 0.01378
+    afbde.com 1376 0.01378
+    dcefd.com 1373 0.01377
+    ddbfc.com 1376 0.01376
+    cccaf.com 1379 0.01376
+    dfaee.com 1384 0.01376
+    bfbda.com 1373 0.01375
+    efded.com 1370 0.01375
+    cdbcd.com 1376 0.01375
+    cedcb.com 1374 0.01375
+    eaebe.com 1373 0.01373
+    feead.com 1376 0.01373
+    cbfbe.com 1373 0.01373
+    cbcaa.com 1369 0.01373
+    acadf.com 1372 0.01373
+    faacf.com 1368 0.01373
+    bbdbe.com 1376 0.01372
+    time it took (milliseconds) for topDomains.py to run: 201
+    
+    conclusion: pass
+                the time it takes to transfer the rows and create the top 50 list is dependant on the number of rows involved and the number of days. the more
+                days and rows, the longer it would take.
+                Given the time it took to move the data from the first table to the second table and calculating the top 50, there is room for improvement.

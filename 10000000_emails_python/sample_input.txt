@@ -1,0 +1,186 @@
+sample_input:
+
+sample_input: 
+    test/sample_data/day1.txt
+
+output:
+    the total sum of the domains between 2014-05-19 and 2014-06-18 is: 1000
+    The top 50 domains in terms of growth between 2014-05-19 and 2014-06-18
+    ['domain', 'total_number', 'percent_increase']
+    feaaa.com 3 0.30000
+    afaea.com 3 0.30000
+    aaebe.com 3 0.30000
+    dbcbf.com 2 0.20000
+    fbfff.com 2 0.20000
+    acece.com 2 0.20000
+    badec.com 2 0.20000
+    ccbcc.com 2 0.20000
+    eaded.com 2 0.20000
+    bbddb.com 2 0.20000
+    dccfb.com 2 0.20000
+    cceee.com 2 0.20000
+    eceed.com 2 0.20000
+    edfba.com 2 0.20000
+    ceccf.com 2 0.20000
+    daafd.com 2 0.20000
+    eabed.com 2 0.20000
+    cbedb.com 2 0.20000
+    cdbed.com 2 0.20000
+    ddbaf.com 2 0.20000
+    fccba.com 2 0.20000
+    afdbc.com 2 0.20000
+    eeabc.com 2 0.20000
+    cbbff.com 2 0.20000
+    eefef.com 2 0.20000
+    beafe.com 2 0.20000
+    deaac.com 2 0.20000
+    faefd.com 2 0.20000
+    ddbdf.com 2 0.20000
+    ccbea.com 2 0.20000
+    cfecc.com 2 0.20000
+    acaed.com 2 0.20000
+    dadbf.com 2 0.20000
+    cdefa.com 2 0.20000
+    fbafd.com 2 0.20000
+    fdadd.com 2 0.20000
+    daede.com 2 0.20000
+    fdbee.com 2 0.20000
+    bfcaa.com 2 0.20000
+    defdc.com 2 0.20000
+    dcdee.com 2 0.20000
+    dccfe.com 2 0.20000
+    ddbea.com 2 0.20000
+    deadd.com 2 0.20000
+    bdfef.com 2 0.20000
+    ffaca.com 2 0.20000
+    fdbfc.com 2 0.20000
+    eeffc.com 2 0.20000
+    cedca.com 2 0.20000
+    ddead.com 2 0.20000
+    
+    
+sample_input: test/sample_data/day1.txt
+       test/sample_data/day2.txt
+
+output: 
+    andrew@andrew-linux:~/shared/test/src$ python topDomains.py
+    successfully connected to test_db
+    4000
+    the total sum of the domains between 2014-05-19 and 2014-06-18 is: 4000
+    The top 50 domains in terms of growth between 2014-05-19 and 2014-06-18
+    ['domain', 'total_number', 'percent_increase']
+    ccbcc.com 3 0.12500
+    ddead.com 3 0.12500
+    ffdec.com 3 0.10000
+    aabaa.com 2 0.10000
+    cecda.com 4 0.10000
+    efcbb.com 3 0.10000
+    dccdb.com 3 0.10000
+    fabfd.com 4 0.10000
+    eaded.com 2 0.10000
+    fdcfd.com 4 0.10000
+    edfba.com 2 0.10000
+    bfbcf.com 3 0.10000
+    dfdff.com 3 0.10000
+    ebabd.com 3 0.10000
+    faefd.com 2 0.10000
+    ebefe.com 3 0.10000
+    cabab.com 3 0.10000
+    afbef.com 3 0.10000
+    bbeac.com 3 0.10000
+    ecbac.com 2 0.07500
+    fbcce.com 2 0.07500
+    afaea.com 3 0.07500
+    eedba.com 2 0.07500
+    dbefe.com 2 0.07500
+    defda.com 3 0.07500
+    ffcaf.com 3 0.07500
+    fbafc.com 3 0.07500
+    bdbeb.com 3 0.07500
+    eebdc.com 3 0.07500
+    dfacd.com 3 0.07500
+    aaebe.com 3 0.07500
+    ecbfb.com 2 0.07500
+    edffd.com 2 0.07500
+    ddded.com 2 0.07500
+    adfeb.com 2 0.07500
+    becef.com 2 0.07500
+    efbab.com 2 0.07500
+    dceed.com 3 0.07500
+    acfed.com 3 0.07500
+    eefce.com 3 0.07500
+    bbfae.com 3 0.07500
+    caebf.com 3 0.07500
+    cfeed.com 2 0.07500
+    eeabc.com 2 0.07500
+    ecbed.com 2 0.07500
+    ffcca.com 2 0.07500
+    bafdc.com 2 0.07500
+    efdca.com 2 0.07500
+    aacac.com 3 0.07500
+    dbdea.com 3 0.07500
+    
+
+sample_input: test/sample_data/day1.txt
+              test/sample_data/day2.txt
+              test/sample_data/day3.txt
+              test/sample_data/day4.txt
+              test/sample_data/day5.txt
+
+output:
+        andrew@andrew-linux:~/shared/test/src$ python topDomains.py
+        successfully connected to test_db
+        119000
+        the total sum of the domains between 2014-05-19 and 2014-06-18 is: 119000
+        The top 50 domains in terms of growth between 2014-05-19 and 2014-06-18
+        ['domain', 'total_number', 'percent_increase']
+        fdbbd.com 36 0.03361
+        efffa.com 26 0.02689
+        ffdcd.com 26 0.02605
+        beeac.com 29 0.02605
+        afebe.com 21 0.02521
+        dffaa.com 25 0.02521
+        cddee.com 27 0.02521
+        cffbe.com 22 0.02437
+        aedab.com 25 0.02437
+        caadd.com 29 0.02437
+        babcb.com 28 0.02437
+        babbd.com 27 0.02353
+        aedda.com 19 0.02353
+        badeb.com 25 0.02353
+        caefc.com 23 0.02353
+        edbbc.com 24 0.02353
+        aacac.com 24 0.02353
+        bcdcc.com 20 0.02353
+        eadbb.com 23 0.02353
+        fefba.com 23 0.02353
+        abdce.com 23 0.02353
+        bcbbf.com 25 0.02353
+        cfceb.com 24 0.02269
+        bccdc.com 22 0.02269
+        efccd.com 19 0.02269
+        cccfc.com 23 0.02269
+        cabea.com 23 0.02269
+        fdfec.com 20 0.02269
+        beacb.com 22 0.02269
+        cdbfa.com 24 0.02269
+        dfffc.com 18 0.02269
+        bacae.com 21 0.02269
+        acedf.com 24 0.02269
+        edebf.com 21 0.02269
+        bfcaa.com 24 0.02269
+        fbeaf.com 24 0.02269
+        aacae.com 22 0.02269
+        aeace.com 24 0.02269
+        afdfd.com 22 0.02269
+        bafdd.com 22 0.02185
+        ccccb.com 24 0.02185
+        edbdb.com 22 0.02185
+        eaaec.com 21 0.02185
+        ebcdf.com 23 0.02185
+        fcafe.com 25 0.02185
+        abadf.com 19 0.02185
+        cccfa.com 23 0.02185
+        edbfa.com 22 0.02185
+        ebdaa.com 22 0.02185
+        dfbee.com 21 0.02185

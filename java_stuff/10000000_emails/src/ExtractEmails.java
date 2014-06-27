@@ -34,6 +34,7 @@ public class ExtractEmails
     String username         = "andrew";
     String password         = "password";
     final String table1     = "mailing";
+    final String table1C1   = "ADDR";
     final String table2     = "addresscount";
     //final String fileName   = ""      //figure out if need to insert by file or by sQL statement
     String SQLRetrive       = "SELECT * FROM " + table1;
@@ -48,7 +49,41 @@ public class ExtractEmails
     
     //Connect to database
     
-    //execute SQL statement, SELECT * FROM mailing
-
+    String strRS = null;
+    Hashtable <String, Integer> domainCount = new Hashtable<String, Integer>();
+    int i = 0;
+    int dupEmailCount = 0;
     
+    //execute SQL statement, SELECT * FROM mailing
+    //rs = ...
+    while (rs.next())
+    {
+        strRS = rs.getString(table1C1);
+        strRS = strRS.substring(strRS.lastIndexOf("@")+1);
+        emailList.add(strRS);
+    }
+    //sort list in alphabetical order (duplicates included)
+    Collections.sort(emailList);
+    
+    for (i=0; i < emailList.length(); i++)
+    {
+        //create out of bounds exception emailList.get(-1)
+        if (emailList.get(i) == emailList.get(i-1))
+        {
+            dupEmailCount++;
+        }
+        else
+        {
+            //insert domain email, dupEmailCount into hashtable
+            domainCount.put(emailList.get(i), dupEmailCount);
+            dupEmailCount = 0;
+        }
+    }
+        
+    //count the duplicates
+    //use TreeSet as a solution?
+    
+    
+    
+}
 }
