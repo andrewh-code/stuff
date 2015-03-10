@@ -27,7 +27,7 @@ import java.lang.Math.*;
  */
 
 //
-public class MatasanoLibraries
+public class Challenge1
 {
     
     public String HexToBase64(String hexInput){
@@ -112,7 +112,6 @@ public class MatasanoLibraries
         	
         	sbOutput.append(table[index]);
         }
-        System.out.println(sbOutput.toString());
         return sbOutput.toString();
     }
     
