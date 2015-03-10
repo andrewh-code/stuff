@@ -1,7 +1,7 @@
 package set1;
 import java.util.*;
 import java.io.*;
-
+import java.lang.Math.*;
 /*
  * Matasano Crypto Challenge
  * Set 1 - Challenge 1
@@ -30,14 +30,28 @@ import java.io.*;
 public class MatasanoLibraries
 {
     
-    public String HexToDecimal(String hexInput){
+    public String HexToBase64(String hexInput){
 
+    	/* take hex string input
+    	 * grab only two bits ofthe hex string at a time, take the two bits and transform them into decimal representation
+    	 * convert the decimal representation into a binary string (8 bit)
+    	 * keep looping and appending the binary string values together until the entire hex string input is complete
+    	 * check to see if the binary string is divisible by 6 (for base 64 representation)
+    	 * divide binary string into 6 groups, convert each 6bit string into base64-encoded value
+    	 */
         //declare variables
         int i                           = 0;
-        int intConvertedIntHexValue     = 0;
+        int intConvertedHexToDec     	= 0;
+        String strConvertedDecToBin		= "";
         String strIndividualHexValue    = "";
-        StringBuilder sbResult          = new StringBuilder();
         StringBuilder sbBinary          = new StringBuilder();
+        StringBuilder sbOutput			= new StringBuilder();
+        int byte64Count 				= 0;
+        String strBinMsg 				= "";
+        int index = 0;
+        char[] table					= Base64Table();
+        int zeroPadCount				= 0;
+        
         if (hexInput == null)   //empty string
         {
             System.out.println("An empty string has been passed, please input a valid string");
@@ -53,52 +67,150 @@ public class MatasanoLibraries
         
         for (i = 0; i <= hexInput.length()-2; i = i+2){
             strIndividualHexValue = hexInput.substring(i, i+2);
-            intConvertedIntHexValue = Integer.parseInt(strIndividualHexValue, 16);
             
-            sbResult.append(Integer.toString(intConvertedIntHexValue));
-            sbBinary.append(Integer.toBinaryString(intConvertedIntHexValue));
-            //System.out.format("strTemp is: %s, intTemp is: %d%n", strIndividualHexValue, intConvertedIntHexValue);
+            intConvertedHexToDec = HexToDec(strIndividualHexValue);
+            
+            strConvertedDecToBin = DecToBin(intConvertedHexToDec, 8);
+
+            //System.out.println(strIndividualHexValue + "\t" + intConvertedHexToDec + "\t" + strConvertedDecToBin + "\n");
+            
+            sbBinary.append(strConvertedDecToBin);
+            byte64Count += 1;
         }
         
-        System.out.println(sbResult.toString());
-        System.out.println(sbBinary.toString());
+               
+        //check to see if binary string is divisible by 6.
+        //If not, then add 0's to the last byte so it's divisible by 3
+        strBinMsg = sbBinary.toString();
+        //System.out.println(strBinMsg.length() + "\n");
+        //System.out.println("message in binary:\n" + sbBinary.toString() + "\n");
         
-        return sbResult.toString();
+        while (strBinMsg.length() % 24 != 0){
+        	//System.out.println("adding an extra 0 to the binary message\n");
+        	strBinMsg = strBinMsg + "0";
+        	zeroPadCount++;
+        }
+        System.out.println(zeroPadCount + "\n");
+        
+        //System.out.println("final bin msg with padding:\n" + strBinMsg + "\n");
+        
+        //convert binary string to 6-bit integer
+        for (i = 0; i < strBinMsg.length(); i = i+6){
+        	
+        	if ((i == strBinMsg.length() - 12) && (zeroPadCount == 16)){
+        		sbOutput.append("==");
+        		break;
+        	}
+        	else if ((i == strBinMsg.length() - 6) && (zeroPadCount == 8)){
+        		sbOutput.append("=");
+        		break;
+        	}
+        	else{
+        		index = Integer.parseInt(strBinMsg.substring(i, i+6), 2);
+        	}
+        	//System.out.println(strBinMsg.substring(i, i+6) + "\t" + index + "\n");
+        	
+        	sbOutput.append(table[index]);
+        }
+        System.out.println(sbOutput.toString());
+        return sbOutput.toString();
     }
     
+    //create base64 look up table
+    private char[] Base64Table(){
+    	
+    	char[] table = new char[64];
+    	int i = 0;
+    	
+    	for (char c = 'A'; c <= 'Z'; c++){
+    		table[i] = c;
+    		i++;
+    	}
+    	for (char c= 'a'; c <= 'z'; c++){
+    		table[i] = c;
+    		i++;
+    	}
+    	for (char c = '0'; c <= '9'; c++){
+    		table[i] = c;
+    		i++;
+    	}
+    	table[i] = '+';
+    	i++;
+    	table[i] = '/';
+
+    	return table; 
+    }
     
-    public static int HexToDec(String hexInput){
+    //converting hexadecimal to decimal
+    private int HexToDec(String hexInput){
         
         int intOutput;
         
-        if (!isHex(hexInput)){
-            System.exit(1);
-        }
+        //if (!isHex(hexInput)){
+        //    System.exit(1);
+        //}
         
-        intOutput = Integer.parseInt(hexInput);
+        intOutput = Integer.parseInt(hexInput, 16);
         
         return intOutput;
     }
     
-    //this is supposed to be a maximum of 127, 8 binary digits
-    public static String DecToBin(int DecInput, int length){
+    //converting decimal to binary
+    private String DecToBin(int decInput, int length){
         
         String strOutput = "";
-        int pad = 0;
         
-        strOutput = Integer.toBinaryString(DecInput);
+        strOutput = Integer.toBinaryString(decInput);
         
         //add leading zeros to strOutput to match 8 bit binary
-        pad = length - strOutput.length();
-        if (pad > 0){
-            
+        while (strOutput.length() < length){
+        	strOutput = "0" + strOutput;
         }
 
         return strOutput;
     }
     
+    //converting binary to decimal
+    private int BinToDec(String binInput){
+    	
+    	int intOutput = 0;
+    	int intTemp = 0;
+    	char chrTemp = ' ';
+    	
+    	if (!(isBin(binInput))){
+    		System.exit(1);
+    	}
+    	
+    	int i = binInput.length()-1;
+    	while (i >= 0){
+    		chrTemp = binInput.charAt(i);
+    		intTemp = Character.getNumericValue(chrTemp);
+    		
+    		intOutput += intTemp * Math.pow(2, binInput.length() - i - 1);
+    		i--;
+    	}
+    	return intOutput;
+    }
     
-    public static boolean isHex(String hexInput){
+    private static boolean isBin(String binInput){
+    	
+    	boolean result = true;
+    	int i = 0;
+    	char temp = ' ';
+    	
+    	for (i = 0; i < binInput.length(); i++){
+    		temp = binInput.charAt(i);
+    		
+    		if ((temp != '0') && (temp != '1')){
+    			System.out.println("String input is not a binary value\n");
+    			result = false;
+    		}
+    	}
+    	
+    	return result;
+    }
+    
+    private static boolean isHex(String hexInput){
         
         boolean result = true;
         String lookupTable = "0123456789ABCDEFG";
