@@ -1,239 +1,92 @@
 package set1;
 import java.util.*;
-import java.io.*;
-import java.lang.Math.*;
-/*
- * Matasano Crypto Challenge
- * Set 1 - Challenge 1
- * Description:
- *              The string:
+import Libraries.CryptoConversions;
 
-                49276d206b696c6c696e6720796f757220627261696e206c696b65206120706f69736f6e6f7573206d757368726f6f6d
-                
-                Should produce:
-                SSdtIGtpbGxpbmcgeW91ciBicmFpbiBsaWtlIGEgcG9pc29ub3VzIG11c2hyb29t
-                
-                So go ahead and make that happen. You'll need to use this code for the rest of the exercises.
+public class Challenge1{
+	
+	/*
+	 * Take string hex input
+	 * loop through hex string, convert hex input into raw bytes (byte array), take two at a time
+	 * separate the two characters into separate 4 bytes, convert them into binary string
+	 * combine the two separate binary strings together to form an 8-bit value
+	 * concatenate the 8 string binary value to an output string until you reach the end of the hex input string
+	 * add 0's to the binary string output until (binary string length % 24 == 0), add two separate flags to indicate
+	 * how many 0's were padded (either 8 for one byte, or 16 for 2 bytes) which is necessary to convert the padded bytes into '='
+	 * loop through the binary string every 6 bits which is the length ofr base64 notation.
+	 * take the new 6-bit value and convert into decimal
+	 * keep looping until finished, put the values into a byte array
+	 * use a look up table to translate the converted 6-bit values (convert to decimal first) to the associated base 64
+	 * char representation 
+	 */
+	
+	public String HexToBase64(String hexInput){
 
-                Cryptopals Rule
-                Always operate on raw bytes, never on encoded strings. Only use hex and base64 for pretty-printing.
- *
- * 
- * Author               Date                Version                 Description
- * =========            =========           =========               =========
- * Andrew Ho            Oct 29, 2014        v1.0                    Initial draft
- * 
- * 
- */
-
-//
-public class Challenge1
-{
-    
-    public String HexToBase64(String hexInput){
-
-    	/* take hex string input
-    	 * grab only two bits ofthe hex string at a time, take the two bits and transform them into decimal representation
-    	 * convert the decimal representation into a binary string (8 bit)
-    	 * keep looping and appending the binary string values together until the entire hex string input is complete
-    	 * check to see if the binary string is divisible by 6 (for base 64 representation)
-    	 * divide binary string into 6 groups, convert each 6bit string into base64-encoded value
-    	 */
-        //declare variables
-        int i                           = 0;
-        int intConvertedHexToDec     	= 0;
-        String strConvertedDecToBin		= "";
-        String strIndividualHexValue    = "";
-        StringBuilder sbBinary          = new StringBuilder();
-        StringBuilder sbOutput			= new StringBuilder();
-        int byte64Count 				= 0;
-        String strBinMsg 				= "";
-        int index = 0;
-        char[] table					= Base64Table();
-        int zeroPadCount				= 0;
-        
-        if (hexInput == null)   //empty string
-        {
-            System.out.println("An empty string has been passed, please input a valid string");
-            return hexInput;
-        }
-        
-        //convert everything to upper case
-        hexInput = hexInput.toUpperCase();
-        
-        if (!isHex(hexInput)){
+		//instantiate new objects
+		CryptoConversions crypto = new CryptoConversions();
+		StringBuilder strBinMsg  = new StringBuilder();
+		StringBuilder sbFinalMsg = new StringBuilder();
+		
+		//declare variables and constants
+		int i 					= 0;
+		int hexInputLength 		= hexInput.length();
+		byte[] temp 			= new byte[hexInputLength];
+		char[] charTable 		= crypto.Base64Table();
+		int hexInt 				= 0;
+		int trailingZeroCount 	= 0;
+		String finalMessage 	= "";
+		
+		//convert everything to uppercase
+		hexInput = hexInput.toUpperCase();
+		
+		//assume the input is an even length number
+		if (!crypto.isHexadecimal(hexInput)){
+            System.out.println(hexInput + " is not a HEX value.\n");
             System.exit(1);
         }
-        
-        for (i = 0; i <= hexInput.length()-2; i = i+2){
-            strIndividualHexValue = hexInput.substring(i, i+2);
-            
-            intConvertedHexToDec = HexToDec(strIndividualHexValue);
-            
-            strConvertedDecToBin = DecToBin(intConvertedHexToDec, 8);
+		
+		//convert everything in the hex string into a byte array
+		for (i = 0; i < hexInput.length(); i=i+2){
+			
+			hexInt = crypto.HexToDec(hexInput.substring(i, i+1));
+			temp[i] = crypto.DecToByte(hexInt);
+			hexInt = crypto.HexToDec(hexInput.substring(i+1, i+2));
+			temp[i+1] = crypto.DecToByte(hexInt);
+			strBinMsg.append(crypto.DecToBin((int)temp[i], 4));
+			strBinMsg.append(crypto.DecToBin((int)temp[i+1], 4));
 
-            //System.out.println(strIndividualHexValue + "\t" + intConvertedHexToDec + "\t" + strConvertedDecToBin + "\n");
-            
-            sbBinary.append(strConvertedDecToBin);
-            byte64Count += 1;
-        }
-        
-               
-        //check to see if binary string is divisible by 6.
-        //If not, then add 0's to the last byte so it's divisible by 3
-        strBinMsg = sbBinary.toString();
-        //System.out.println(strBinMsg.length() + "\n");
-        //System.out.println("message in binary:\n" + sbBinary.toString() + "\n");
-        
-        while (strBinMsg.length() % 24 != 0){
-        	//System.out.println("adding an extra 0 to the binary message\n");
-        	strBinMsg = strBinMsg + "0";
-        	zeroPadCount++;
-        }
-        System.out.println(zeroPadCount + "\n");
-        
-        //System.out.println("final bin msg with padding:\n" + strBinMsg + "\n");
-        
-        //convert binary string to 6-bit integer
-        for (i = 0; i < strBinMsg.length(); i = i+6){
-        	
-        	if ((i == strBinMsg.length() - 12) && (zeroPadCount == 16)){
-        		sbOutput.append("==");
-        		break;
-        	}
-        	else if ((i == strBinMsg.length() - 6) && (zeroPadCount == 8)){
-        		sbOutput.append("=");
-        		break;
-        	}
-        	else{
-        		index = Integer.parseInt(strBinMsg.substring(i, i+6), 2);
-        	}
-        	//System.out.println(strBinMsg.substring(i, i+6) + "\t" + index + "\n");
-        	
-        	sbOutput.append(table[index]);
-        }
-        return sbOutput.toString();
-    }
-    
-    //create base64 look up table
-    private char[] Base64Table(){
-    	
-    	char[] table = new char[64];
-    	int i = 0;
-    	
-    	for (char c = 'A'; c <= 'Z'; c++){
-    		table[i] = c;
-    		i++;
-    	}
-    	for (char c= 'a'; c <= 'z'; c++){
-    		table[i] = c;
-    		i++;
-    	}
-    	for (char c = '0'; c <= '9'; c++){
-    		table[i] = c;
-    		i++;
-    	}
-    	table[i] = '+';
-    	i++;
-    	table[i] = '/';
-
-    	return table; 
-    }
-    
-    //converting hexadecimal to decimal
-    private int HexToDec(String hexInput){
-        
-        int intOutput;
-        
-        //if (!isHex(hexInput)){
-        //    System.exit(1);
-        //}
-        
-        intOutput = Integer.parseInt(hexInput, 16);
-        
-        return intOutput;
-    }
-    
-    //converting decimal to binary
-    private String DecToBin(int decInput, int length){
-        
-        String strOutput = "";
-        
-        strOutput = Integer.toBinaryString(decInput);
-        
-        //add leading zeros to strOutput to match 8 bit binary
-        while (strOutput.length() < length){
-        	strOutput = "0" + strOutput;
-        }
-
-        return strOutput;
-    }
-    
-    //converting binary to decimal
-    private int BinToDec(String binInput){
-    	
-    	int intOutput = 0;
-    	int intTemp = 0;
-    	char chrTemp = ' ';
-    	
-    	if (!(isBin(binInput))){
-    		System.exit(1);
-    	}
-    	
-    	int i = binInput.length()-1;
-    	while (i >= 0){
-    		chrTemp = binInput.charAt(i);
-    		intTemp = Character.getNumericValue(chrTemp);
-    		
-    		intOutput += intTemp * Math.pow(2, binInput.length() - i - 1);
-    		i--;
-    	}
-    	return intOutput;
-    }
-    
-    private static boolean isBin(String binInput){
-    	
-    	boolean result = true;
-    	int i = 0;
-    	char temp = ' ';
-    	
-    	for (i = 0; i < binInput.length(); i++){
-    		temp = binInput.charAt(i);
-    		
-    		if ((temp != '0') && (temp != '1')){
-    			System.out.println("String input is not a binary value\n");
-    			result = false;
-    		}
-    	}
-    	
-    	return result;
-    }
-    
-    private static boolean isHex(String hexInput){
-        
-        boolean result = true;
-        String lookupTable = "0123456789ABCDEFG";
-        int i = 0;
-        int j = 0;
-        char temp;
-
-        //check to see if length of the hex string is an even number
-        if (hexInput.length() % 2 != 0){
-            System.out.println("please provide a proper hex value");
-            result = false;
-        }
-        
-        hexInput = hexInput.toUpperCase();
-        //check to see that every character in the hex string is a hex value
-        for (i = 0; i < hexInput.length(); i++){
-            temp = hexInput.charAt(i);       
-            
-            if (lookupTable.toUpperCase().indexOf(temp) < 0)
-            {
-                System.out.println("A character in the input is not a HEX value, please provide a proper hex value");
-                result = false;
-            }
-        }
-        return result;
-    }
+			//System.out.println(hexInt + "\t" + temp[i] + "\t" + strBinMsg.toString() + "\n");
+		}
+		
+		//add the 0 padding to fill in the last bytes
+		while (strBinMsg.length() % 24 != 0){
+			strBinMsg.append("0");
+			trailingZeroCount++;
+		}
+		//System.out.println("trailing zero count: " + trailingZeroCount + "\n");
+		
+		//set new byte array (for 6 bits) with new length of the sring binary message
+		byte[] array6Bit = new byte[strBinMsg.length()/6];
+		
+		//convert binary message string into its 6 bits
+		for (i = 0; i < strBinMsg.length(); i=i+6){
+			
+			if ((i == strBinMsg.length() - 12) && (trailingZeroCount == 16)){
+				sbFinalMsg.append("==");
+	    		break;
+	    	}
+	    	else if ((i == strBinMsg.length() - 6) && (trailingZeroCount == 8)){
+	    		sbFinalMsg.append("=");
+	    		break;
+	    	}
+	    	else{
+	    		array6Bit[i/6] = Byte.valueOf(strBinMsg.substring(i, i+6), 2);
+				sbFinalMsg.append(charTable[array6Bit[i/6]]);
+	    	}
+			//System.out.println(strBinMsg.substring(i, i+6) + "\t" + array6Bit[i/6] + "\t" + charTable[array6Bit[i/6]] + "\t" + i + "\n");
+		}
+		//convert string builder to string
+		finalMessage = sbFinalMsg.toString();
+		
+		return finalMessage;
+	}
 }
